@@ -237,11 +237,16 @@ class StandaloneDevGUI:
                 
                 # Détecter le système d'exploitation
                 if os.name == 'nt':  # Windows
-                    subprocess.run(['dev\\setup.bat'], shell=True, check=True)
+                    result = subprocess.run(['dev\\setup.bat'], shell=True, capture_output=True, text=True, timeout=60)
                 else:  # Linux/macOS
-                    subprocess.run(['./dev/setup.sh'], check=True)
-                    
-                self.status_label.config(text="Configuration terminée", fg='#63ff43')
+                    result = subprocess.run(['./dev/setup.sh'], capture_output=True, text=True, timeout=60)
+                
+                if result.returncode == 0:
+                    self.status_label.config(text="Configuration terminée", fg='#63ff43')
+                else:
+                    self.status_label.config(text=f"Erreur: {result.stderr[:30]}", fg='#f52639')
+            except subprocess.TimeoutExpired:
+                self.status_label.config(text="Timeout - Configuration trop longue", fg='#f52639')
             except Exception as e:
                 self.status_label.config(text=f"Erreur config: {str(e)[:30]}", fg='#f52639')
         
@@ -320,11 +325,16 @@ class StandaloneDevGUI:
                 
                 # Détecter le système d'exploitation
                 if os.name == 'nt':  # Windows
-                    subprocess.run(['dev\\docker.bat'], shell=True, check=True)
+                    result = subprocess.run(['dev\\docker.bat'], shell=True, capture_output=True, text=True, timeout=120)
                 else:  # Linux/macOS
-                    subprocess.run(['./dev/docker.sh'], check=True)
-                    
-                self.status_label.config(text="Docker démarré", fg='#63ff43')
+                    result = subprocess.run(['./dev/docker.sh'], capture_output=True, text=True, timeout=120)
+                
+                if result.returncode == 0:
+                    self.status_label.config(text="Docker démarré", fg='#63ff43')
+                else:
+                    self.status_label.config(text=f"Erreur Docker: {result.stderr[:30]}", fg='#f52639')
+            except subprocess.TimeoutExpired:
+                self.status_label.config(text="Timeout Docker", fg='#f52639')
             except Exception as e:
                 self.status_label.config(text=f"Erreur Docker: {str(e)[:30]}", fg='#f52639')
         
@@ -342,11 +352,16 @@ class StandaloneDevGUI:
                 
                 # Détecter le système d'exploitation
                 if os.name == 'nt':  # Windows
-                    subprocess.run(['dev\\docker-stop.bat'], shell=True, check=True)
+                    result = subprocess.run(['dev\\docker-stop.bat'], shell=True, capture_output=True, text=True, timeout=60)
                 else:  # Linux/macOS
-                    subprocess.run(['./dev/docker-stop.sh'], check=True)
-                    
-                self.status_label.config(text="Docker arrêté", fg='#63ff43')
+                    result = subprocess.run(['./dev/docker-stop.sh'], capture_output=True, text=True, timeout=60)
+                
+                if result.returncode == 0:
+                    self.status_label.config(text="Docker arrêté", fg='#63ff43')
+                else:
+                    self.status_label.config(text=f"Erreur: {result.stderr[:30]}", fg='#f52639')
+            except subprocess.TimeoutExpired:
+                self.status_label.config(text="Timeout arrêt Docker", fg='#f52639')
             except Exception as e:
                 self.status_label.config(text=f"Erreur arrêt: {str(e)[:30]}", fg='#f52639')
         
