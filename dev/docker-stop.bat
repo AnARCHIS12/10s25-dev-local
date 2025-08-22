@@ -1,17 +1,18 @@
 @echo off
+chcp 65001 >nul
 
-echo 🛑 Arrêt des conteneurs Docker...
+echo Arret des conteneurs Docker...
 echo =================================
 
 REM Aller au dossier docker
 cd /d "%~dp0\..\docker"
 
-REM Arrêter et supprimer les conteneurs
+REM Arreter et supprimer les conteneurs
 docker compose down
 
 echo.
-echo ✅ Conteneurs arrêtés !
+echo Conteneurs arretes !
 echo.
-echo 🔄 Pour redémarrer : dev\docker.bat
+echo Pour redemarrer : dev\docker.bat
 echo.
 pause

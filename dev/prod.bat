@@ -1,17 +1,18 @@
 @echo off
+chcp 65001 >nul
 setlocal enabledelayedexpansion
 
-echo 🏭 Préparation pour la production...
+echo Preparation pour la production...
 echo ====================================
 
-REM Vérifier qu'on est dans le bon dossier
+REM Verifier qu'on est dans le bon dossier
 if not exist "index.html" (
-    echo ❌ Erreur: Lancez ce script depuis la racine du projet ^(où se trouve index.html^)
+    echo Erreur: Lancez ce script depuis la racine du projet ^(ou se trouve index.html^)
     pause
     exit /b 1
 )
 
-echo 🔄 Restauration du menu avec conditions SSI pour Apache...
+echo Restauration du menu avec conditions SSI pour Apache...
 (
 echo ^<!-- Éléments de menu principal personnalisé pour ce site  --^>^<!--#config errmsg="" --^>
 echo ^<li^<!--#if expr="$REQUEST_URI = '/local/visuels.html'" --^> class="selected"^<!--#endif --^>^>^<a href="/local/visuels.html"^>Visuels^</a^>^</li^>
@@ -24,13 +25,13 @@ echo 	^</ul^>
 echo ^</li^>
 ) > "local\ssi\menu_top.shtml"
 
-echo 🗑️  Suppression des fichiers de développement...
+echo Suppression des fichiers de developpement...
 if exist "server.py" (
     del "server.py"
     echo    - server.py supprimé
 )
 
-echo 📝 Mise à jour du .htaccess pour Apache de production...
+echo Mise a jour du .htaccess pour Apache de production...
 (
 echo Options +Includes +FollowSymLinks
 echo AddType text/html .shtml .html
@@ -57,19 +58,19 @@ echo     ExpiresByType image/gif "access plus 1 month"
 echo ^</IfModule^>
 ) > .htaccess
 
-echo 🔧 Régénération finale des groupes...
+echo Regeneration finale des groupes...
 where php >nul 2>&1
 if !errorlevel! == 0 (
     if exist "src\update_groups.php" (
         cd src
-        php update_groups.php >nul 2>&1 && echo    ✅ Groupes régénérés
+        php update_groups.php >nul 2>&1 && echo    Groupes regeneres
         cd ..
     )
 ) else (
-    echo    ⚠️  PHP non disponible, groupes non régénérés
+    echo    PHP non disponible, groupes non regeneres
 )
 
-echo 📋 Création du fichier de déploiement...
+echo Creation du fichier de deploiement...
 (
 echo # Déploiement en production
 echo.
@@ -86,10 +87,10 @@ echo    systemctl reload apache2
 echo    ```
 echo.
 echo ## Structure déployée
-echo - ✅ Fichiers .htaccess configurés pour Apache
-echo - ✅ Menu avec conditions SSI pour sélection active
-echo - ✅ Configuration de sécurité et cache
-echo - ✅ Groupes générés ^(si PHP disponible^)
+echo - Fichiers .htaccess configures pour Apache
+echo - Menu avec conditions SSI pour selection active
+echo - Configuration de securite et cache
+echo - Groupes generes ^(si PHP disponible^)
 echo.
 echo ## Test
 echo - Vérifier que les includes SSI fonctionnent
@@ -105,19 +106,19 @@ echo ```
 ) > DEPLOIEMENT.md
 
 echo.
-echo ✅ Préparation production terminée !
+echo Preparation production terminee !
 echo.
-echo 📦 Le projet est prêt pour le déploiement Apache
+echo Le projet est pret pour le deploiement Apache
 echo.
-echo 🔄 Changements effectués :
-echo    - Menu restauré avec conditions SSI
-echo    - server.py supprimé
-echo    - .htaccess optimisé pour la production
-echo    - Groupes régénérés
-echo    - Documentation de déploiement créée
+echo Changements effectues :
+echo    - Menu restaure avec conditions SSI
+echo    - server.py supprime
+echo    - .htaccess optimise pour la production
+echo    - Groupes regeneres
+echo    - Documentation de deploiement creee
 echo.
-echo 📋 Voir DEPLOIEMENT.md pour les instructions
+echo Voir DEPLOIEMENT.md pour les instructions
 echo.
-echo 🔙 Pour revenir en mode dev : dev\setup.bat
+echo Pour revenir en mode dev : dev\setup.bat
 echo.
 pause
