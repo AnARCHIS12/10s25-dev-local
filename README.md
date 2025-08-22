@@ -6,19 +6,7 @@ La doc est [dans le wiki](https://github.com/10s25/site/wiki).
 
 ## Développement local
 
-### Option 1 : Interface Graphique (Recommandé)
-```bash
-# Lancer l'application GUI
-cd dev-gui
-python3 standalone_gui.py
-```
-**Fonctionnalités :**
-- ✅ Serveur Python intégré avec SSI
-- ✅ Gestion Docker complète
-- ✅ Ports dynamiques (8000-8003)
-- ✅ Interface simple et intuitive
-
-### Option 2 : Serveur Python (ligne de commande)
+### Option 1 : Serveur Python (ligne de commande)
 
 **Linux/macOS :**
 ```bash
@@ -39,7 +27,7 @@ dev\start.bat
 ```
 ➜ http://localhost:8000
 
-### Option 3 : Docker (Apache + Live reload)
+### Option 2 : Docker (Apache + Live reload)
 
 **Linux/macOS :**
 ```bash
@@ -81,7 +69,7 @@ dev\prod.bat
 - `dev/` - Outils de développement *(ignoré en prod)*
   - Scripts Linux/macOS : `.sh`
   - Scripts Windows : `.bat`
-- `dev-gui/` - **Application GUI de développement** *(nouveau)*
+
 - `docker/` - Configuration Docker *(ignoré en prod)*
 - `favicon.ico` - Icône du site
 - `.htaccess` - Configuration Apache avec sécurité
@@ -93,41 +81,9 @@ dev\prod.bat
 - PHP pour la génération des groupes
 - Python pour le serveur de développement
 - Docker pour l'environnement complet
-- **Tkinter** pour l'interface graphique
-- **PyInstaller** pour la compilation d'exécutables
 
-## Application GUI de Développement
 
-### Compilation d'exécutables
 
-**Linux :**
-```bash
-cd dev-gui
-./build_venv.sh
-```
-
-**Windows :**
-```cmd
-cd dev-gui
-build_venv.bat
-```
-
-### Fonctionnalités de l'application
-
-- 🖥️ **Interface graphique** simple et intuitive
-- 🐍 **Serveur Python intégré** avec support SSI
-- 🐳 **Gestion Docker** complète (Apache, Live reload, BrowserSync)
-- 🔄 **Ports dynamiques** (8000-8003) si port occupé
-- 🎨 **Logo du projet** intégré
-- 📱 **Ouverture navigateur** automatique
-- 📁 **Sélection de projet** par interface
-- 🔒 **Configuration sécurisée** (.htaccess avec headers)
-
-### Distribution
-
-Les exécutables compilés peuvent être distribués sans installation Python :
-- **Linux** : `dist/10s25-dev-gui`
-- **Windows** : `dist/10s25-dev-gui.exe`
 
 ## Ports utilisés
 
