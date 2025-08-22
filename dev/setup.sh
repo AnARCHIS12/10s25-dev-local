@@ -20,6 +20,14 @@ mkdir -p global/ssi
 mkdir -p dev
 
 echo "📝 Création du fichier .htaccess principal..."
+
+# Sauvegarder l'ancien .htaccess si il existe
+if [ -f ".htaccess" ]; then
+    cp .htaccess .htaccess.prod.bak 2>/dev/null || echo "   ⚠️  Impossible de sauvegarder .htaccess (permissions)"
+fi
+
+# Créer le nouveau .htaccess (avec gestion des permissions)
+{
 cat > .htaccess << 'EOF'
 Options +Includes +FollowSymLinks
 AddType text/html .shtml .html
@@ -28,6 +36,18 @@ AddHandler server-parsed .html
 DirectoryIndex index.html
 XBitHack on
 EOF
+} 2>/dev/null || {
+    echo "   ⚠️  Impossible d'écrire .htaccess (permissions). Création de .htaccess.dev à la place"
+    cat > .htaccess.dev << 'EOF'
+Options +Includes +FollowSymLinks
+AddType text/html .shtml .html
+AddOutputFilter INCLUDES .shtml .html
+AddHandler server-parsed .html
+DirectoryIndex index.html
+XBitHack on
+EOF
+    echo "   💡 Copiez manuellement .htaccess.dev vers .htaccess avec sudo si nécessaire"
+}
 
 echo "📝 Création du fichier .htaccess pour SSI legacy..."
 cat > local/ssi/.htaccess << 'EOF'
@@ -35,7 +55,14 @@ SSILegacyExprParser on
 EOF
 
 echo "📝 Correction du menu (suppression des conditions SSI)..."
-cat > local/ssi/menu_top.shtml << 'EOF'
+
+# Restaurer le menu de dev depuis la sauvegarde si elle existe
+if [ -f "local/ssi/menu_top.shtml.dev.bak" ]; then
+    cp local/ssi/menu_top.shtml.dev.bak local/ssi/menu_top.shtml
+    echo "   🔄 Menu de dev restauré depuis la sauvegarde"
+else
+    # Créer le menu de dev
+    cat > local/ssi/menu_top.shtml << 'EOF'
 <!-- Éléments de menu principal personnalisé pour ce site -->
 <li><a href="/local/visuels.html">Visuels</a></li>
 <li class="dropdown">
@@ -46,6 +73,7 @@ cat > local/ssi/menu_top.shtml << 'EOF'
 	</ul>
 </li>
 EOF
+fi
 
 echo "📝 Création des fichiers SSI manquants..."
 if [ ! -f "local/ssi/emails.shtml" ]; then

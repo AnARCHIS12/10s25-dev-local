@@ -16,15 +16,32 @@ if [ ! -f "index.html" ]; then
 fi
 
 echo "🔄 Restauration du menu avec conditions SSI pour Apache..."
+
+# Créer le dossier si nécessaire
+mkdir -p local/ssi
+
+# Sauvegarder le menu de dev si il existe
+if [ -f "local/ssi/menu_top.shtml" ]; then
+    cp local/ssi/menu_top.shtml local/ssi/menu_top.shtml.dev.bak
+    echo "   💾 Menu de dev sauvegardé dans menu_top.shtml.dev.bak"
+fi
+
 cat > local/ssi/menu_top.shtml << 'EOF'
-<!-- Éléments de menu principal personnalisé pour ce site  --><!--#config errmsg="" -->
-<li<!--#if expr="$REQUEST_URI = '/local/visuels.html'" --> class="selected"<!--#endif -->><a href="/local/visuels.html">Visuels</a></li>
+<!-- Éléments de menu principal personnalisé pour ce site -->
+<!--#config errmsg="" -->
+<li<!--#if expr="$REQUEST_URI = '/local/visuels.html'" --> class="selected"<!--#endif -->>
+    <a href="/local/visuels.html">Visuels</a>
+</li>
 <li class="dropdown<!--#if expr="$REQUEST_URI = '/doleances/'" --> selected<!--#endif -->">
-	<a href="#" class="disabled">Doléances ▾</a>
-	<ul class="submenu">
-		<li<!--#if expr="$REQUEST_URI = '/local/formulaire-doleances.html'" --> class="selected"<!--#endif -->><a href="/local/formulaire-doleances.html">Formulaire de Doléances</a></li>
-		<li<!--#if expr="$REQUEST_URI = '/local/doleances.html'" --> class="selected"<!--#endif -->><a href="/local/doleances.html">Cahier de Doléances</a></li>
-	</ul>
+    <a href="#" class="disabled">Doléances ▾</a>
+    <ul class="submenu">
+        <li<!--#if expr="$REQUEST_URI = '/local/formulaire-doleances.html'" --> class="selected"<!--#endif -->>
+            <a href="/local/formulaire-doleances.html">Formulaire de Doléances</a>
+        </li>
+        <li<!--#if expr="$REQUEST_URI = '/local/doleances.html'" --> class="selected"<!--#endif -->>
+            <a href="/local/doleances.html">Cahier de Doléances</a>
+        </li>
+    </ul>
 </li>
 EOF
 
@@ -32,6 +49,14 @@ echo "🗑️  Suppression des fichiers de développement..."
 [ -f "server.py" ] && rm server.py && echo "   - server.py supprimé"
 
 echo "📝 Mise à jour du .htaccess pour Apache de production..."
+
+# Sauvegarder l'ancien .htaccess
+if [ -f ".htaccess" ]; then
+    cp .htaccess .htaccess.dev.bak 2>/dev/null || echo "   ⚠️  Impossible de sauvegarder .htaccess (permissions)"
+fi
+
+# Créer le nouveau .htaccess (avec gestion des permissions)
+{
 cat > .htaccess << 'EOF'
 Options +Includes +FollowSymLinks
 AddType text/html .shtml .html
@@ -57,6 +82,34 @@ XBitHack on
     ExpiresByType image/gif "access plus 1 month"
 </IfModule>
 EOF
+} 2>/dev/null || {
+    echo "   ⚠️  Impossible d'écrire .htaccess (permissions). Création de .htaccess.prod à la place"
+    cat > .htaccess.prod << 'EOF'
+Options +Includes +FollowSymLinks
+AddType text/html .shtml .html
+AddOutputFilter INCLUDES .shtml .html
+AddHandler server-parsed .html
+DirectoryIndex index.html
+XBitHack on
+
+# Configuration pour la production
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Cache pour les ressources statiques
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+</IfModule>
+EOF
+}
 
 echo "🔧 Régénération finale des groupes..."
 if [ -f "src/update_groups.php" ] && command -v php >/dev/null 2>&1; then
