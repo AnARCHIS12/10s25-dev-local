@@ -50,61 +50,59 @@ if not exist "local\ssi\gpg.shtml" (
 )
 
 echo Creation du serveur Python avec SSI...
-(
-echo # -*- coding: utf-8 -*-
-echo #!/usr/bin/env python3
-echo import http.server
-echo import socketserver
-echo import os
-echo import re
-echo.
-echo class SSIHandler^(http.server.SimpleHTTPRequestHandler^):
-echo     def do_GET^(self^):
-echo         if self.path.endswith^('.html'^) or self.path == '/':
-echo             try:
-echo                 if self.path == '/':
-echo                     filepath = 'index.html'
-echo                 else:
-echo                     filepath = self.path.lstrip^('/'^)
-echo.                
-echo                 with open^(filepath, 'r', encoding='utf-8'^) as f:
-echo                     content = f.read^(^)
-echo.                
-echo                 content = self.process_ssi^(content^)
-echo.                
-echo                 self.send_response^(200^)
-echo                 self.send_header^('Content-type', 'text/html; charset=utf-8'^)
-echo                 self.end_headers^(^)
-echo                 self.wfile.write^(content.encode^('utf-8'^)^)
-echo             except FileNotFoundError:
-echo                 super^(^).do_GET^(^)
-echo         else:
-echo             super^(^).do_GET^(^)
-echo.    
-echo     def process_ssi^(self, content^):
-echo         pattern = r'^^<!--#include virtual="^([^"]+^)" --^>'
-echo.        
-echo         def replace_include^(match^):
-echo             include_path = match.group^(1^)
-echo             try:
-echo                 with open^(include_path, 'r', encoding='utf-8'^) as f:
-echo                     return f.read^(^)
-echo             except FileNotFoundError:
-echo                 return f'^^<!-- File not found: {include_path} --^>'
-echo.        
-echo         # Supprimer les directives SSI non supportees
-echo         content = re.sub^(r'^^<!--#config[^^>]*--^>', '', content^)
-echo         content = re.sub^(r'^^<!--#if[^^>]*--^>', '', content^)
-echo         content = re.sub^(r'^^<!--#endif[^^>]*--^>', '', content^)
-echo         content = re.sub^(r'^^<!--#echo[^^>]*--^>', '', content^)
-echo.        
-echo         return re.sub^(pattern, replace_include, content^)
-echo.
-echo PORT = 8000
-echo with socketserver.TCPServer^(^("localhost", PORT^), SSIHandler^) as httpd:
-echo     print^(f"Server running at http://localhost:{PORT}"^)
-echo     httpd.serve_forever^(^)
-) > server.py
+echo # -*- coding: utf-8 -*- > server.py
+echo #!/usr/bin/env python3 >> server.py
+echo import http.server >> server.py
+echo import socketserver >> server.py
+echo import os >> server.py
+echo import re >> server.py
+echo. >> server.py
+echo class SSIHandler(http.server.SimpleHTTPRequestHandler): >> server.py
+echo     def do_GET(self): >> server.py
+echo         if self.path.endswith('.html') or self.path == '/': >> server.py
+echo             try: >> server.py
+echo                 if self.path == '/': >> server.py
+echo                     filepath = 'index.html' >> server.py
+echo                 else: >> server.py
+echo                     filepath = self.path.lstrip('/') >> server.py
+echo. >> server.py
+echo                 with open(filepath, 'r', encoding='utf-8') as f: >> server.py
+echo                     content = f.read() >> server.py
+echo. >> server.py
+echo                 content = self.process_ssi(content) >> server.py
+echo. >> server.py
+echo                 self.send_response(200) >> server.py
+echo                 self.send_header('Content-type', 'text/html; charset=utf-8') >> server.py
+echo                 self.end_headers() >> server.py
+echo                 self.wfile.write(content.encode('utf-8')) >> server.py
+echo             except FileNotFoundError: >> server.py
+echo                 super().do_GET() >> server.py
+echo         else: >> server.py
+echo             super().do_GET() >> server.py
+echo. >> server.py
+echo     def process_ssi(self, content): >> server.py
+echo         pattern = r'<!--#include virtual="([^"]+)" -->' >> server.py
+echo. >> server.py
+echo         def replace_include(match): >> server.py
+echo             include_path = match.group(1) >> server.py
+echo             try: >> server.py
+echo                 with open(include_path, 'r', encoding='utf-8') as f: >> server.py
+echo                     return f.read() >> server.py
+echo             except FileNotFoundError: >> server.py
+echo                 return f'<!-- File not found: {include_path} -->' >> server.py
+echo. >> server.py
+echo         # Supprimer les directives SSI non supportees >> server.py
+echo         content = re.sub(r'<!--#config[^>]*-->', '', content) >> server.py
+echo         content = re.sub(r'<!--#if[^>]*-->', '', content) >> server.py
+echo         content = re.sub(r'<!--#endif[^>]*-->', '', content) >> server.py
+echo         content = re.sub(r'<!--#echo[^>]*-->', '', content) >> server.py
+echo. >> server.py
+echo         return re.sub(pattern, replace_include, content) >> server.py
+echo. >> server.py
+echo PORT = 8000 >> server.py
+echo with socketserver.TCPServer(("localhost", PORT), SSIHandler) as httpd: >> server.py
+echo     print(f"Server running at http://localhost:{PORT}") >> server.py
+echo     httpd.serve_forever() >> server.py
 
 echo Creation du script de demarrage...
 (
