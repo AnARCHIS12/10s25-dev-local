@@ -50,17 +50,68 @@ if not exist "local\ssi\gpg.shtml" (
 )
 
 echo Creation du serveur Python avec SSI...
-if exist "dev\server_template.py" (
+if exist "server.py" (
+    echo    server.py existe deja, pas de modification
+) else if exist "dev\server_template.py" (
     copy "dev\server_template.py" "server.py" >nul
     echo    Serveur Python cree depuis le template
 ) else (
-    echo    Template manquant, creation manuelle...
-    echo # -*- coding: utf-8 -*- > server.py
-    echo import http.server, socketserver, os, re >> server.py
-    echo class SSIHandler(http.server.SimpleHTTPRequestHandler): >> server.py
-    echo     def do_GET(self): super().do_GET() >> server.py
-    echo PORT = 8000 >> server.py
-    echo with socketserver.TCPServer(("localhost", PORT), SSIHandler) as httpd: httpd.serve_forever() >> server.py
+    echo    Creation du serveur Python avec PowerShell...
+    powershell -Command "$content = @'
+# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
+import http.server
+import socketserver
+import os
+import re
+
+class SSIHandler(http.server.SimpleHTTPRequestHandler):
+    def do_GET(self):
+        if self.path.endswith('.html') or self.path == '/':
+            try:
+                if self.path == '/':
+                    filepath = 'index.html'
+                else:
+                    filepath = self.path.lstrip('/')
+                
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                content = self.process_ssi(content)
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'text/html; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(content.encode('utf-8'))
+            except FileNotFoundError:
+                super().do_GET()
+        else:
+            super().do_GET()
+    
+    def process_ssi(self, content):
+        pattern = r'<!--#include virtual=\"([^\"]+)\" -->'
+        
+        def replace_include(match):
+            include_path = match.group(1)
+            try:
+                with open(include_path, 'r', encoding='utf-8') as f:
+                    return f.read()
+            except FileNotFoundError:
+                return f'<!-- File not found: {include_path} -->'
+        
+        content = re.sub(r'<!--#config[^>]*-->', '', content)
+        content = re.sub(r'<!--#if[^>]*-->', '', content)
+        content = re.sub(r'<!--#endif[^>]*-->', '', content)
+        content = re.sub(r'<!--#echo[^>]*-->', '', content)
+        
+        return re.sub(pattern, replace_include, content)
+
+PORT = 8000
+with socketserver.TCPServer((\"localhost\", PORT), SSIHandler) as httpd:
+    print(f\"Server running at http://localhost:{PORT}\")
+    httpd.serve_forever()
+'@; $content | Out-File -FilePath 'server.py' -Encoding UTF8"
+    echo    Serveur Python cree avec PowerShell
 )
 
 echo Creation du script de demarrage...
