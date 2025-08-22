@@ -5,7 +5,7 @@ setlocal
 echo Demarrage de l'environnement Docker...
 echo ========================================
 
-REM Aller à la racine du projet
+REM Aller a la racine du projet
 cd /d "%~dp0\.."
 
 REM Verifier que Docker est installe
@@ -53,10 +53,10 @@ echo.
 echo Construction et demarrage des conteneurs...
 cd docker
 
-REM Arrêter les conteneurs existants
+REM Arreter les conteneurs existants
 docker compose down >nul 2>&1
 
-REM Construire et démarrer
+REM Construire et demarrer
 docker compose up --build -d
 
 echo.
