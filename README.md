@@ -1,4 +1,4 @@
-# Sites Indignons-nous pour le 10 septembre 2025 et après
+# Sites Indignons-nous Bloquons tout pour le 10 septembre 2025 et après
 
 **Projet GitHub** : https://github.com/10s25/site
 
