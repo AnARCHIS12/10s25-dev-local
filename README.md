@@ -78,7 +78,7 @@ cd dev-gui
 **Windows :**
 ```cmd
 cd dev-gui
-build_venv.bat
+.\build_venv.bat
 ```
 
 ### Fonctionnalités de l'application
