@@ -67,7 +67,8 @@ class SSIHandler(http.server.SimpleHTTPRequestHandler):
             else:
                 return f"<!-- File not found: {include_path} -->"
         
-        # Process <!--#echo var="..." -->        def echo_handler(match):
+        # Process <!--#echo var="..." -->
+        def echo_handler(match):
             var_name = match.group(1)
             if var_name == "SERVER_NAME":
                 return f"localhost:{current_port}"
