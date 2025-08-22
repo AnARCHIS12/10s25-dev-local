@@ -1,4 +1,4 @@
-# DEV LOCAL OUTILS POUR LE Sites Indignons-nous Bloquons tout pour le 10 septembre 2025 et après
+# Dev local outils pour le sites Indignons-nous Bloquons tout pour le 10 septembre 2025 et après
 
 **Projet GitHub** : https://github.com/10s25/site
 
