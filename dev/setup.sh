@@ -5,7 +5,7 @@
 
 set -e
 
-echo "🚀 Configuration automatique du projet site-main"
+echo "🚀 Configuration automatique du projet site"
 echo "================================================"
 
 # Vérifier qu'on est dans le bon dossier

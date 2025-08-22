@@ -104,6 +104,15 @@ class StandaloneDevGUI:
                                     bg='#f9e25b', fg='#000', font=('Arial', 9))
         self.project_label.pack(side='left', padx=10, pady=10)
         
+        # Section Configuration
+        config_frame = tk.LabelFrame(main_frame, text="Configuration", 
+                                   bg='#f9e25b', fg='#000', font=('Arial', 12, 'bold'))
+        config_frame.pack(fill='x', pady=10)
+        
+        tk.Button(config_frame, text="Configuration initiale", 
+                 command=self.setup_project_scripts, bg='#63ff43', fg='#000',
+                 font=('Arial', 10, 'bold')).pack(side='left', padx=10, pady=10)
+        
         # Section Serveur Python
         python_frame = tk.LabelFrame(main_frame, text="Serveur Python Simple", 
                                    bg='#f9e25b', fg='#000', font=('Arial', 12, 'bold'))
@@ -216,6 +225,28 @@ class StandaloneDevGUI:
         
         threading.Thread(target=stop_server, daemon=True).start()
     
+    def setup_project_scripts(self):
+        if not self.project_path:
+            messagebox.showerror("Erreur", "Veuillez sélectionner un projet d'abord")
+            return
+        
+        def run_setup():
+            try:
+                self.status_label.config(text="Configuration en cours...", fg='#f9e25b')
+                os.chdir(self.project_path)
+                
+                # Détecter le système d'exploitation
+                if os.name == 'nt':  # Windows
+                    subprocess.run(['dev\\setup.bat'], shell=True, check=True)
+                else:  # Linux/macOS
+                    subprocess.run(['./dev/setup.sh'], check=True)
+                    
+                self.status_label.config(text="Configuration terminée", fg='#63ff43')
+            except Exception as e:
+                self.status_label.config(text=f"Erreur config: {str(e)[:30]}", fg='#f52639')
+        
+        threading.Thread(target=run_setup, daemon=True).start()
+    
     def setup_project(self):
         if not self.project_path:
             messagebox.showerror("Erreur", "Veuillez sélectionner un projet d'abord")
@@ -225,12 +256,12 @@ class StandaloneDevGUI:
             os.chdir(self.project_path)
             
             # Créer dossiers
-            os.makedirs('local/ssi', exist_ok=True)
-            os.makedirs('global/ssi', exist_ok=True)
+            os.makedirs(os.path.join('local', 'ssi'), exist_ok=True)
+            os.makedirs(os.path.join('global', 'ssi'), exist_ok=True)
             os.makedirs('dev', exist_ok=True)
             
             # Menu
-            with open('local/ssi/menu_top.shtml', 'w', encoding='utf-8') as f:
+            with open(os.path.join('local', 'ssi', 'menu_top.shtml'), 'w', encoding='utf-8') as f:
                 f.write('''<!-- Éléments de menu principal personnalisé pour ce site -->
 <li><a href="/local/visuels.html">Visuels</a></li>
 <li class="dropdown">
@@ -242,16 +273,18 @@ class StandaloneDevGUI:
 </li>''')
             
             # Fichiers SSI
-            if not os.path.exists('local/ssi/emails.shtml'):
-                with open('local/ssi/emails.shtml', 'w') as f:
+            emails_path = os.path.join('local', 'ssi', 'emails.shtml')
+            if not os.path.exists(emails_path):
+                with open(emails_path, 'w') as f:
                     f.write('<a href="mailto:contact@example.com">contact@example.com</a>')
             
-            if not os.path.exists('local/ssi/gpg.shtml'):
-                with open('local/ssi/gpg.shtml', 'w') as f:
+            gpg_path = os.path.join('local', 'ssi', 'gpg.shtml')
+            if not os.path.exists(gpg_path):
+                with open(gpg_path, 'w') as f:
                     f.write('Clé GPG à configurer')
             
             # Groupes basique
-            with open('global/ssi/groupes.shtml', 'w', encoding='utf-8') as f:
+            with open(os.path.join('global', 'ssi', 'groupes.shtml'), 'w', encoding='utf-8') as f:
                 f.write('''<ul class="sidebar-section-1">
     <li>
         <h3 class="font-yellow">Réseaux sociaux</h3>
@@ -284,7 +317,13 @@ class StandaloneDevGUI:
             try:
                 self.status_label.config(text="Démarrage Docker...", fg='#f9e25b')
                 os.chdir(self.project_path)
-                subprocess.run(['./dev/docker.sh'], check=True)
+                
+                # Détecter le système d'exploitation
+                if os.name == 'nt':  # Windows
+                    subprocess.run(['dev\\docker.bat'], shell=True, check=True)
+                else:  # Linux/macOS
+                    subprocess.run(['./dev/docker.sh'], check=True)
+                    
                 self.status_label.config(text="Docker démarré", fg='#63ff43')
             except Exception as e:
                 self.status_label.config(text=f"Erreur Docker: {str(e)[:30]}", fg='#f52639')
@@ -300,7 +339,13 @@ class StandaloneDevGUI:
             try:
                 self.status_label.config(text="Arrêt Docker...", fg='#f9e25b')
                 os.chdir(self.project_path)
-                subprocess.run(['./dev/docker-stop.sh'], check=True)
+                
+                # Détecter le système d'exploitation
+                if os.name == 'nt':  # Windows
+                    subprocess.run(['dev\\docker-stop.bat'], shell=True, check=True)
+                else:  # Linux/macOS
+                    subprocess.run(['./dev/docker-stop.sh'], check=True)
+                    
                 self.status_label.config(text="Docker arrêté", fg='#63ff43')
             except Exception as e:
                 self.status_label.config(text=f"Erreur arrêt: {str(e)[:30]}", fg='#f52639')
@@ -342,8 +387,8 @@ XBitHack on
 </IfModule>''')
             
             # .htaccess SSI legacy
-            os.makedirs('local/ssi', exist_ok=True)
-            with open('local/ssi/.htaccess', 'w') as f:
+            os.makedirs(os.path.join('local', 'ssi'), exist_ok=True)
+            with open(os.path.join('local', 'ssi', '.htaccess'), 'w') as f:
                 f.write('SSILegacyExprParser on')
             
             self.status_label.config(text="Fichiers .htaccess créés (avec sécurité)", fg='#63ff43')
@@ -355,8 +400,8 @@ XBitHack on
         # Utiliser le favicon.ico du projet
         favicon_paths = [
             'favicon.ico',
-            '../favicon.ico', 
-            '../../favicon.ico'
+            os.path.join('..', 'favicon.ico'),
+            os.path.join('..', '..', 'favicon.ico')
         ]
         
         for favicon_path in favicon_paths:
@@ -401,9 +446,9 @@ XBitHack on
     def load_project_logo(self, parent):
         # Essayer de charger le logo SVG du projet
         logo_paths = [
-            'global/img/logo-inbt.svg',
-            '../global/img/logo-inbt.svg',
-            '../../global/img/logo-inbt.svg'
+            os.path.join('global', 'img', 'logo-inbt.svg'),
+            os.path.join('..', 'global', 'img', 'logo-inbt.svg'),
+            os.path.join('..', '..', 'global', 'img', 'logo-inbt.svg')
         ]
         
         # Créer le frame du logo

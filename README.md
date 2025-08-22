@@ -19,6 +19,8 @@ python3 standalone_gui.py
 - ✅ Interface simple et intuitive
 
 ### Option 2 : Serveur Python (ligne de commande)
+
+**Linux/macOS :**
 ```bash
 # Configuration initiale
 ./dev/setup.sh
@@ -26,9 +28,20 @@ python3 standalone_gui.py
 # Démarrage
 ./dev/start.sh
 ```
+
+**Windows :**
+```cmd
+REM Configuration initiale
+dev\setup.bat
+
+REM Démarrage
+dev\start.bat
+```
 ➜ http://localhost:8000
 
 ### Option 3 : Docker (Apache + Live reload)
+
+**Linux/macOS :**
 ```bash
 # Démarrage complet
 ./dev/docker.sh
@@ -36,11 +49,27 @@ python3 standalone_gui.py
 # Arrêt
 ./dev/docker-stop.sh
 ```
+
+**Windows :**
+```cmd
+REM Démarrage complet
+dev\docker.bat
+
+REM Arrêt
+dev\docker-stop.bat
+```
 ➜ http://localhost:8080 (Apache) | http://localhost:3000 (Live reload) | http://localhost:3001 (BrowserSync)
 
 ### Préparation production
+
+**Linux/macOS :**
 ```bash
 ./dev/prod.sh
+```
+
+**Windows :**
+```cmd
+dev\prod.bat
 ```
 
 ## Structure du projet
@@ -50,6 +79,8 @@ python3 standalone_gui.py
 - `local/` - Personnalisations locales
 - `src/` - Scripts PHP de génération
 - `dev/` - Outils de développement *(ignoré en prod)*
+  - Scripts Linux/macOS : `.sh`
+  - Scripts Windows : `.bat`
 - `dev-gui/` - **Application GUI de développement** *(nouveau)*
 - `docker/` - Configuration Docker *(ignoré en prod)*
 - `favicon.ico` - Icône du site
@@ -78,7 +109,7 @@ cd dev-gui
 **Windows :**
 ```cmd
 cd dev-gui
-.\build_venv.bat
+build_venv.bat
 ```
 
 ### Fonctionnalités de l'application
