@@ -70,6 +70,10 @@ Une fois bash installé, utilisez les mêmes commandes :
 
 **Toutes les plateformes (avec bash installé) :**
 ```bash
+# Donner les permissions d'exécution (première fois seulement)
+chmod +x dev/prod.sh
+
+# Préparer pour la production
 ./dev/prod.sh
 ```
 
@@ -123,3 +127,4 @@ Pour utiliser ce projet sur Windows, vous devez installer bash. Choisissez une d
 3. **MSYS2**
 
 Voir les instructions détaillées dans la section "Développement local" ci-dessus.
+
