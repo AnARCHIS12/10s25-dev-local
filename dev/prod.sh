@@ -27,21 +27,14 @@ if [ -f "local/ssi/menu_top.shtml" ]; then
 fi
 
 cat > local/ssi/menu_top.shtml << 'EOF'
-<!-- Éléments de menu principal personnalisé pour ce site -->
-<!--#config errmsg="" -->
-<li<!--#if expr="$REQUEST_URI = '/local/visuels.html'" --> class="selected"<!--#endif -->>
-    <a href="/local/visuels.html">Visuels</a>
-</li>
-<li class="dropdown<!--#if expr="$REQUEST_URI = '/doleances/'" --> selected<!--#endif -->">
-    <a href="#" class="disabled">Doléances ▾</a>
-    <ul class="submenu">
-        <li<!--#if expr="$REQUEST_URI = '/local/formulaire-doleances.html'" --> class="selected"<!--#endif -->>
-            <a href="/local/formulaire-doleances.html">Formulaire de Doléances</a>
-        </li>
-        <li<!--#if expr="$REQUEST_URI = '/local/doleances.html'" --> class="selected"<!--#endif -->>
-            <a href="/local/doleances.html">Cahier de Doléances</a>
-        </li>
-    </ul>
+<!-- Éléments de menu principal personnalisé pour ce site  --><!--#config errmsg="" -->
+<li<!--#if expr="$REQUEST_URI = '/local/visuels.html'" --> class="selected"<!--#endif -->><a href="/local/visuels.html">Visuels</a></li>
+<li class="dropdown<!--#if expr="$REQUEST_URI = /doleances/" --> selected<!--#endif -->">
+	<a href="#" class="disabled">Doléances ▾</a>
+	<ul class="submenu">
+		<li<!--#if expr="$REQUEST_URI = '/local/formulaire-doleances.html'" --> class="selected"<!--#endif -->><a href="/local/formulaire-doleances.html">Formulaire de Doléances</a></li>
+		<li<!--#if expr="$REQUEST_URI = '/local/doleances.html'" --> class="selected"<!--#endif -->><a href="/local/doleances.html">Cahier de Doléances</a></li>
+	</ul>
 </li>
 EOF
 
